@@ -25,7 +25,7 @@ namespace tp1
 	SystemeExpert::~SystemeExpert(){}
 
 	void SystemeExpert::ajouterRegleSE(const Regle &tr){
-			//baseRegles.ajouter(tr, baseRegles.taille());
+			baseRegles.ajouter(tr, baseRegles.taille()+1);
 	}
 
 	void SystemeExpert::ajouterFaitSE(const TypeFait &tf){
@@ -33,16 +33,53 @@ namespace tp1
 	}
 
 	void SystemeExpert::chargerSE(std::ifstream & EntreeFichier){
-		const std::string marqueurDebutPremisesRegle = "!>";
-		const std::string marqueurDebutConclusionRegle = "!%";
+		const std::string marqueurDebutPremisesRegle = "!%";
+		const std::string marqueurDebutConclusionRegle = "!>";
 		const std::string marqueurDebutFait = "!!";
 
 		modeLecture modeLecture = PremiseRegle;
+		bool regleACreer = false;
+		Regle regle;
+		std::string currentLine;
+		while(std::getline(EntreeFichier,currentLine)){
 
-		//for(auto line : EntreeFichier){
-		//	if(modeLecture)
+			if(currentLine==marqueurDebutPremisesRegle){
+				if(regleACreer){
+									ajouterRegleSE(regle);
+								}
+				modeLecture = PremiseRegle;
 
-		//}
+				regle = Regle();
+			}else if(currentLine==marqueurDebutConclusionRegle){
+				modeLecture = ConclusionRegle;
+			}else if(currentLine==marqueurDebutFait){
+				if(regleACreer){
+					ajouterRegleSE(regle);
+				}
+				modeLecture = Fait;
+			}else{
+				regleACreer = true;
+				switch (modeLecture) {
+
+				case PremiseRegle:
+						regle.GetPremisses().push_back(currentLine);
+					break;
+
+				case ConclusionRegle:
+						regle.GetConclusions().push_back(currentLine);
+					break;
+
+				case Fait:
+						ajouterFaitSE(currentLine);
+					break;
+
+				default:
+					break;
+				}
+			}
+
+		}
+
 
 
 

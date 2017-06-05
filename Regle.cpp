@@ -15,7 +15,58 @@
 namespace tp1
 {
 	//Mettez l'implantation de vos méthodes ici.
-	Regle::Regle(){}
+	Regle::Regle()
+	:conclusions(), premisses()
+	{}
+
 	Regle::~Regle(){}
+
+	bool Regle::operator == (const Regle & r) {
+
+		bool premisesEgales = (r.premisses==premisses);
+		bool conclusionsEgales = (r.conclusions==conclusions);
+
+		return premisesEgales && conclusionsEgales;
+
+	}
+
+	Regle& Regle::operator = (const Regle & r) {
+		Regle regle;
+
+
+	    if (this != &r) { // self-assignment check expected
+	    	this->premisses.clear();
+	    	this->conclusions.clear();
+
+			for(TypeFait premisse : r.premisses){
+				this->premisses.push_back(premisse);
+			}
+
+			for(TypeFait conclusion: r.conclusions){
+				this->conclusions.push_back(conclusion);
+			}
+
+
+	    }
+
+	    return *this ;
+
+	}
+
+	Regle::Regle(const Regle& r)
+	:conclusions(), premisses()
+	{
+
+		for(TypeFait premisse : r.premisses){
+			premisses.push_back(premisse);
+		}
+
+		for(TypeFait conclusion: r.conclusions){
+			conclusions.push_back(conclusion);
+		}
+	}
+
+
+
 }
 
