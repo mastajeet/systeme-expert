@@ -110,25 +110,40 @@ namespace tp1
 
 	void SystemeExpert::chainageAvant(ListeCirculaire<Regle> & er){
 		unsigned int nombrePremissesTrouvees;
-		for(int i =1 ; i<= baseRegles.taille(); i++){
+		int taille_initiale = 1;
+		int taille_finale = 0;
 
-			Regle re = baseRegles.element(i);
-			nombrePremissesTrouvees = 0;
-			for(auto premise : re.GetPremisses()){
-				for(auto fait : baseFaits){
-					if(fait==premise){
-						 nombrePremissesTrouvees++;
+		while(taille_initiale!=taille_finale){
+			taille_initiale = baseRegles.taille();
+			std::list<int> position_a_enlever_des_regles;
+			for(int i =1 ; i<= baseRegles.taille(); i++){
+
+				Regle re = baseRegles.element(i);
+				nombrePremissesTrouvees = 0;
+				for(auto premise : re.GetPremisses()){
+					for(auto fait : baseFaits){
+						if(fait==premise){
+							 nombrePremissesTrouvees++;
+						}
+					}
+				}
+				if(nombrePremissesTrouvees == baseRegles.element(i).GetPremisses().size()){
+					er.ajouter(re,er.taille()+1);
+					std::cout << "on utilise" << re << std::endl;
+					position_a_enlever_des_regles.push_back(i);
+					for (auto conclusion : re.GetConclusions()){
+						ajouterFaitSE(conclusion);
 					}
 				}
 			}
-			if(nombrePremissesTrouvees == baseRegles.element(i).GetPremisses().size()){
-				er.ajouter(re,er.taille()+1);
-				for (auto conclusion : re.GetConclusions()){
-					ajouterFaitSE(conclusion);
-				}
+			int offset = 0;
+			for(auto index_a_enlever : position_a_enlever_des_regles){
+				std::cout << "on enleve" << baseRegles.element(index_a_enlever) << std::endl;
+				std::cout << "offset" << offset << std::endl;
+				baseRegles.enleverPos(index_a_enlever+offset);
+				offset--;
 			}
-
-
+			taille_finale = baseRegles.taille();
 		}
 	}
 
