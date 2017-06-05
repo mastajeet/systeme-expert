@@ -7,6 +7,8 @@
  *
  */
 
+
+#include <algorithm>
 #include "SystemeExpert.h"
 
 namespace tp1
@@ -23,6 +25,25 @@ namespace tp1
 
 	}
 	SystemeExpert::~SystemeExpert(){}
+
+
+	SystemeExpert& SystemeExpert::operator =(const SystemeExpert & systeme){
+
+		this->baseFaits.clear();
+		for(auto i=1; i<this->baseRegles.taille();i++){
+			this->baseRegles.enleverPos(i);
+		}
+
+		this->baseFaits = std::list<TypeFait>(systeme.baseFaits);
+		for(auto i=1; i<systeme.baseRegles.taille();i++){
+			Regle regle = systeme.baseRegles.element(i);
+			this->baseRegles.ajouter(regle,i);
+		}
+
+
+		return *this;
+	}
+
 
 	void SystemeExpert::ajouterRegleSE(const Regle &tr){
 			baseRegles.ajouter(tr, baseRegles.taille()+1);
@@ -88,18 +109,66 @@ namespace tp1
 	}
 
 	void SystemeExpert::chainageAvant(ListeCirculaire<Regle> & er){
+		unsigned int nombrePremissesTrouvees;
+		for(int i =1 ; i<= baseRegles.taille(); i++){
 
+			Regle re = baseRegles.element(i);
+			nombrePremissesTrouvees = 0;
+			for(auto premise : re.GetPremisses()){
+				for(auto fait : baseFaits){
+					if(fait==premise){
+						 nombrePremissesTrouvees++;
+					}
+				}
+			}
+			if(nombrePremissesTrouvees == baseRegles.element(i).GetPremisses().size()){
+				er.ajouter(re,er.taille()+1);
+				for (auto conclusion : re.GetConclusions()){
+					ajouterFaitSE(conclusion);
+				}
+			}
+
+
+		}
 	}
 
 	void SystemeExpert::sauvegarderSE(std::ofstream & SortieFichier) const {
 
+			const std::string marqueurDebutPremisesRegle = "!%";
+			const std::string marqueurDebutConclusionRegle = "!>";
+			const std::string marqueurDebutFait = "!!";
+
+			bool premiereRegle = true;
+			for(auto i = 1; i<=baseRegles.taille(); i++){
+				Regle re = baseRegles.element(i);
+
+				if(premiereRegle){
+					premiereRegle = false;
+				}else{
+					SortieFichier << marqueurDebutPremisesRegle << std::endl;
+				}
+
+				for(auto premisse : re.GetPremisses()){
+					SortieFichier << premisse << std::endl;
+				}
+
+				SortieFichier << marqueurDebutConclusionRegle << std::endl;
+
+				for(auto conclusion: re.GetConclusions()){
+						SortieFichier << conclusion << std::endl;
+				}
+
+
+			}
+
+			SortieFichier << marqueurDebutFait << std::endl;
+
+			for(auto fait: baseFaits){
+					SortieFichier << fait << std::endl;
+			}
+
 
 	}
 
-	SystemeExpert& SystemeExpert::operator = (const SystemeExpert & se){
-		SystemeExpert retour = SystemeExpert();
-		return retour;
-	}
-//Mettez l'implantation de vos méthodes ici.
 }
 
