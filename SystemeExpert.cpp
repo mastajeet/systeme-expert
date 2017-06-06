@@ -26,7 +26,6 @@ namespace tp1
 	}
 	SystemeExpert::~SystemeExpert(){}
 
-
 	SystemeExpert& SystemeExpert::operator =(const SystemeExpert & systeme){
 
 		this->baseFaits.clear();
@@ -50,7 +49,15 @@ namespace tp1
 	}
 
 	void SystemeExpert::ajouterFaitSE(const TypeFait &tf){
+		bool faitTrouve = false;
+		for(auto fait : baseFaits){
+			if(tf == fait){
+				faitTrouve = true;
+			}
+		}
+		if(!faitTrouve){
 			baseFaits.push_back(tf);
+		}
 	}
 
 	void SystemeExpert::chargerSE(std::ifstream & EntreeFichier){
@@ -110,42 +117,39 @@ namespace tp1
 
 	void SystemeExpert::chainageAvant(ListeCirculaire<Regle> & er){
 		unsigned int nombrePremissesTrouvees;
-		int taille_initiale = 1;
+		int taille_initiale = -1;
 		int taille_finale = 0;
-
+		std::list<Regle*> regle_deja_appliquees;
 		while(taille_initiale!=taille_finale){
-			taille_initiale = baseRegles.taille();
-			std::list<int> position_a_enlever_des_regles;
+			taille_initiale = regle_deja_appliquees.size();
 			for(int i =1 ; i<= baseRegles.taille(); i++){
 
 				Regle re = baseRegles.element(i);
-				nombrePremissesTrouvees = 0;
-				for(auto premise : re.GetPremisses()){
+				Regle *rePointeur = &baseRegles.element(i);
+				bool regleNonTrouvee = (std::find(regle_deja_appliquees.begin(),regle_deja_appliquees.end(),rePointeur)==regle_deja_appliquees.end());
+
+				if(regleNonTrouvee){
+					nombrePremissesTrouvees = 0;
 					for(auto fait : baseFaits){
-						if(fait==premise){
-							 nombrePremissesTrouvees++;
+						for(auto premise : re.GetPremisses()){
+							if(fait==premise){
+								 nombrePremissesTrouvees++;
+							}
+						}
+					}
+					if(nombrePremissesTrouvees == baseRegles.element(i).GetPremisses().size()){
+						er.ajouter(re,er.taille()+1);
+						regle_deja_appliquees.push_back(rePointeur);
+						for (auto conclusion : re.GetConclusions()){
+							ajouterFaitSE(conclusion);
 						}
 					}
 				}
-				if(nombrePremissesTrouvees == baseRegles.element(i).GetPremisses().size()){
-					er.ajouter(re,er.taille()+1);
-					std::cout << "on utilise" << re << std::endl;
-					position_a_enlever_des_regles.push_back(i);
-					for (auto conclusion : re.GetConclusions()){
-						ajouterFaitSE(conclusion);
-					}
-				}
 			}
-			int offset = 0;
-			for(auto index_a_enlever : position_a_enlever_des_regles){
-				std::cout << "on enleve" << baseRegles.element(index_a_enlever) << std::endl;
-				std::cout << "offset" << offset << std::endl;
-				baseRegles.enleverPos(index_a_enlever+offset);
-				offset--;
-			}
-			taille_finale = baseRegles.taille();
+			taille_finale = regle_deja_appliquees.size();
 		}
 	}
+
 
 	void SystemeExpert::sauvegarderSE(std::ofstream & SortieFichier) const {
 
