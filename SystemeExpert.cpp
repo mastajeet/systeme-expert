@@ -117,16 +117,16 @@ namespace tp1
 
 	void SystemeExpert::chainageAvant(ListeCirculaire<Regle> & er){
 		unsigned int nombrePremissesTrouvees;
-		int taille_initiale = -1;
-		int taille_finale = 0;
-		std::list<Regle*> regle_deja_appliquees;
-		while(taille_initiale!=taille_finale){
-			taille_initiale = regle_deja_appliquees.size();
+		int tailleInitiale = -1;
+		int tailleFinale = 0;
+		std::list<Regle*> reglesDejaAppliquees;
+		while(tailleInitiale!=tailleFinale){
+			tailleInitiale = reglesDejaAppliquees.size();
 			for(int i =1 ; i<= baseRegles.taille(); i++){
 
 				Regle re = baseRegles.element(i);
 				Regle *rePointeur = &baseRegles.element(i);
-				bool regleNonTrouvee = (std::find(regle_deja_appliquees.begin(),regle_deja_appliquees.end(),rePointeur)==regle_deja_appliquees.end());
+				bool regleNonTrouvee = (std::find(reglesDejaAppliquees.begin(),reglesDejaAppliquees.end(),rePointeur)==reglesDejaAppliquees.end());
 
 				if(regleNonTrouvee){
 					nombrePremissesTrouvees = 0;
@@ -139,14 +139,14 @@ namespace tp1
 					}
 					if(nombrePremissesTrouvees == baseRegles.element(i).GetPremisses().size()){
 						er.ajouter(re,er.taille()+1);
-						regle_deja_appliquees.push_back(rePointeur);
+						reglesDejaAppliquees.push_back(rePointeur);
 						for (auto conclusion : re.GetConclusions()){
 							ajouterFaitSE(conclusion);
 						}
 					}
 				}
 			}
-			taille_finale = regle_deja_appliquees.size();
+			tailleFinale = reglesDejaAppliquees.size();
 		}
 	}
 
