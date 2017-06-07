@@ -65,15 +65,18 @@ namespace tp1
 	 * \param[in] p_regle la regle a ajouter
 	 */
 	void SystemeExpert::ajouterRegleSE(const Regle &p_regle){
+		size_t baseRegleTaille = baseRegles.taille();
 		baseRegles.ajouter(p_regle, baseRegles.taille()+1);
+		ASSERTION(++baseRegleTaille == baseRegles.taille());
 	}
 
 	/**
 	 * \brief Ajoute un fait a la base de faits du systeme expert
-	 * \post Le systeme expert a un nouveau fait
+	 * \post Le systeme expert a un nouveau fait s'il n'existe pas deja
 	 * \param[in] p_fait la regle a ajouter
 	 */
 	void SystemeExpert::ajouterFaitSE(const TypeFait &p_fait){
+
 		bool faitTrouve = false;
 		for(auto fait : baseFaits){
 			if(p_fait == fait){
@@ -81,7 +84,9 @@ namespace tp1
 			}
 		}
 		if(!faitTrouve){
+			size_t tailleBaseFait = baseFaits.size();
 			baseFaits.push_back(p_fait);
+			ASSERTION(++tailleBaseFait == baseFaits.size());
 		}
 	}
 
