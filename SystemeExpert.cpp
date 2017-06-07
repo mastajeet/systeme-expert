@@ -49,13 +49,31 @@ namespace tp1
 		}
 
 		this->baseFaits = std::list<TypeFait>(p_systeme.baseFaits);
-		for(auto i=1; i<p_systeme.baseRegles.taille();i++){
+		for(auto i=1; i<p_systeme.baseRegles.taille()+1;i++){
 			Regle regle = p_systeme.baseRegles.element(i);
 			this->baseRegles.ajouter(regle,i);
 		}
 
 
 		return *this;
+	}
+
+	/**
+	 * \brief Constructeur copieur
+	 *
+	 * \post Le systeme expert passé en paramètre est copiée
+	 * \param[in] p_systeme le systeme expert a copier
+	 */
+	SystemeExpert::SystemeExpert(const SystemeExpert & p_systeme)
+	:baseRegles(ListeCirculaire<Regle>()), baseFaits(std::list<TypeFait>())
+	{
+
+		this->baseFaits = std::list<TypeFait>(p_systeme.baseFaits);
+		for(auto i=1; i<p_systeme.baseRegles.taille()+1;i++){
+			Regle regle = p_systeme.baseRegles.element(i);
+			this->baseRegles.ajouter(regle,i);
+		}
+
 	}
 
 	/**
