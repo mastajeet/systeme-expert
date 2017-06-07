@@ -14,13 +14,27 @@
 
 namespace tp1
 {
-	//Mettez l'implantation de vos méthodes ici.
+	/**
+	 *  \brief Constructeur par défaut
+	 *
+	 *  \post Une instance de la classe Regle est initialisée
+	 */
 	Regle::Regle()
 	:conclusions(), premisses()
 	{}
 
+	/**
+	 *  \brief Destructeur
+	 *  \post L'instance de ListeCirculaire est détruite.
+	 */
 	Regle::~Regle(){}
 
+	/**
+	 * \brief Compare deux regles ensemble
+	 *
+	 * \post les regles sont inchangees
+	 * \return vrai si les deux regles sont egale, faux sinon
+	 */
 	bool Regle::operator == (const Regle & r) {
 
 		bool premisesEgales = (r.premisses==premisses);
@@ -30,6 +44,12 @@ namespace tp1
 
 	}
 
+	/**
+	 * \brief Surcharge de l'opérateur =
+	 *
+	 * \post La regle passée en paramètre est copiée
+	 * \param[in] r La regle à copier
+	 */
 	Regle& Regle::operator = (const Regle & r) {
 		Regle regle;
 
@@ -53,6 +73,12 @@ namespace tp1
 
 	}
 
+	/**
+	 *  \brief Constructeur de copie.
+	 *
+	 * \post La Regle passée en paramètre est copiée
+	 * \param[in] r La regle à copier
+	 */
 	Regle::Regle(const Regle& r)
 	:conclusions(), premisses()
 	{

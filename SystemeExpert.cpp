@@ -14,28 +14,43 @@
 namespace tp1
 {
 
+
 	enum modeLecture{
 		PremiseRegle, ConclusionRegle, Fait
 	};
 
+	/**
+	 *  \brief Constructeur par défaut
+	 *
+	 *  \post Une instance de la classe SystemeExpert est initialisée
+	 */
 	SystemeExpert::SystemeExpert()
 	:baseRegles(ListeCirculaire<Regle>()), baseFaits(std::list<TypeFait>())
 	{
-
-
 	}
+
+	/**
+	 *  \brief Destructeur
+	 *  \post L'instance de SystemeExpoert est détruite.
+	 */
 	SystemeExpert::~SystemeExpert(){}
 
-	SystemeExpert& SystemeExpert::operator =(const SystemeExpert & systeme){
+	/**
+	 * \brief Surcharge de l'opérateur =
+	 *
+	 * \post Le systeme expert passé en paramètre est copiée
+	 * \param[in] p_systeme le systeme expert a copier
+	 */
+	SystemeExpert& SystemeExpert::operator =(const SystemeExpert & p_systeme){
 
 		this->baseFaits.clear();
 		for(auto i=1; i<this->baseRegles.taille();i++){
 			this->baseRegles.enleverPos(i);
 		}
 
-		this->baseFaits = std::list<TypeFait>(systeme.baseFaits);
-		for(auto i=1; i<systeme.baseRegles.taille();i++){
-			Regle regle = systeme.baseRegles.element(i);
+		this->baseFaits = std::list<TypeFait>(p_systeme.baseFaits);
+		for(auto i=1; i<p_systeme.baseRegles.taille();i++){
+			Regle regle = p_systeme.baseRegles.element(i);
 			this->baseRegles.ajouter(regle,i);
 		}
 
@@ -43,24 +58,39 @@ namespace tp1
 		return *this;
 	}
 
-
-	void SystemeExpert::ajouterRegleSE(const Regle &tr){
-			baseRegles.ajouter(tr, baseRegles.taille()+1);
+	/**
+	 * \brief Ajoute une regle a la base de regle du systeme expert
+	 * \pre la regle doit avoir au moins une premisse et une conclusion
+	 * \post Le systeme expert passé a une nouvelle regle
+	 * \param[in] p_regle la regle a ajouter
+	 */
+	void SystemeExpert::ajouterRegleSE(const Regle &p_regle){
+		baseRegles.ajouter(p_regle, baseRegles.taille()+1);
 	}
 
-	void SystemeExpert::ajouterFaitSE(const TypeFait &tf){
+	/**
+	 * \brief Ajoute un fait a la base de faits du systeme expert
+	 * \post Le systeme expert a un nouveau fait
+	 * \param[in] p_fait la regle a ajouter
+	 */
+	void SystemeExpert::ajouterFaitSE(const TypeFait &p_fait){
 		bool faitTrouve = false;
 		for(auto fait : baseFaits){
-			if(tf == fait){
+			if(p_fait == fait){
 				faitTrouve = true;
 			}
 		}
 		if(!faitTrouve){
-			baseFaits.push_back(tf);
+			baseFaits.push_back(p_fait);
 		}
 	}
 
-	void SystemeExpert::chargerSE(std::ifstream & EntreeFichier){
+	/**
+	 * \brief Ajoute le contenu d'un fichier texte au systeme expert
+	 * \post Le systeme expert est charge avec le contenu d'un fichier texte
+	 * \param[in] entreeFichier le fichier en stream a inserer dans le systeme expert
+	 */
+	void SystemeExpert::chargerSE(std::ifstream & entreeFichier){
 		const std::string marqueurDebutPremisesRegle = "!%";
 		const std::string marqueurDebutConclusionRegle = "!>";
 		const std::string marqueurDebutFait = "!!";
@@ -69,7 +99,7 @@ namespace tp1
 		bool regleACreer = false;
 		Regle regle;
 		std::string currentLine;
-		while(std::getline(EntreeFichier,currentLine)){
+		while(std::getline(entreeFichier,currentLine)){
 
 			if(currentLine==marqueurDebutPremisesRegle){
 				if(regleACreer){
@@ -115,6 +145,11 @@ namespace tp1
 
 	}
 
+	/**
+	 * \brief Sature la base de fait du systeme expert afin de tirer des conclusions
+	 * \post Le systeme expert a tous les fait qu'il lui est possible de deduire dans sa base de faits
+	 * \param[in] er La liste circulaire comprenant les regles utilisees pour la deduction
+	 */
 	void SystemeExpert::chainageAvant(ListeCirculaire<Regle> & er){
 		unsigned int nombrePremissesTrouvees;
 		int tailleInitiale = -1;
@@ -150,8 +185,12 @@ namespace tp1
 		}
 	}
 
-
-	void SystemeExpert::sauvegarderSE(std::ofstream & SortieFichier) const {
+	/**
+	 * \brief Exporte le contenu du systeme expert vers un fichier texte
+	 * \post Le systeme expert est exporte vers un fichier texte
+	 * \param[in] sortieFichier le fichier en stream a inserer dans le systeme expert
+	 */
+	void SystemeExpert::sauvegarderSE(std::ofstream & sortieFichier) const {
 
 			const std::string marqueurDebutPremisesRegle = "!%";
 			const std::string marqueurDebutConclusionRegle = "!>";
@@ -164,26 +203,26 @@ namespace tp1
 				if(premiereRegle){
 					premiereRegle = false;
 				}else{
-					SortieFichier << marqueurDebutPremisesRegle << std::endl;
+					sortieFichier << marqueurDebutPremisesRegle << std::endl;
 				}
 
 				for(auto premisse : re.GetPremisses()){
-					SortieFichier << premisse << std::endl;
+					sortieFichier << premisse << std::endl;
 				}
 
-				SortieFichier << marqueurDebutConclusionRegle << std::endl;
+				sortieFichier << marqueurDebutConclusionRegle << std::endl;
 
 				for(auto conclusion: re.GetConclusions()){
-						SortieFichier << conclusion << std::endl;
+						sortieFichier << conclusion << std::endl;
 				}
 
 
 			}
 
-			SortieFichier << marqueurDebutFait << std::endl;
+			sortieFichier << marqueurDebutFait << std::endl;
 
 			for(auto fait: baseFaits){
-					SortieFichier << fait << std::endl;
+					sortieFichier << fait << std::endl;
 			}
 
 
